@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <!-- Cola del cometa -->
+    <path d="M70,30 Q40,45 20,70" stroke="#FFD700" stroke-width="4" fill="none" opacity="0.6"/>
+    <path d="M70,30 Q35,50 15,65" stroke="#FFA500" stroke-width="3" fill="none" opacity="0.4"/>
+    <!-- Núcleo del cometa -->
+    <circle cx="70" cy="30" r="10" fill="#FFD700"/>
+    <circle cx="70" cy="30" r="6" fill="#FFA500"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <!-- Cuerpo principal -->
+    <rect x="30" y="40" width="40" height="20" fill="#A0A0A0" stroke="#808080" stroke-width="2"/>
+    <!-- Paneles solares -->
+    <rect x="10" y="45" width="20" height="10" fill="#4169E1"/>
+    <rect x="70" y="45" width="20" height="10" fill="#4169E1"/>
+    <!-- Antena -->
+    <line x1="50" y1="30" x2="50" y2="40" stroke="#808080" stroke-width="2"/>
+    <circle cx="50" cy="30" r="3" fill="#808080"/>
+</svg>

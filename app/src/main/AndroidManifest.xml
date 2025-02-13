@@ -26,6 +26,7 @@
         <activity android:name=".RegisterActivity" android:exported="true" />
         <activity android:name=".MenuActivity"/>
         <activity android:name=".juego1.MainActivity" />
+        <activity android:name=".juego2.MainActivity2" />
     </application>
 
 </manifest>

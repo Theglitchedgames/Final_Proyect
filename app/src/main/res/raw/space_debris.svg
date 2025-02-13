@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <!-- Pieza principal -->
+    <path d="M30,30 L70,30 L60,70 L40,70 Z" fill="#C0C0C0" stroke="#808080" stroke-width="2"/>
+    <!-- Detalles de daño -->
+    <line x1="35" y1="40" x2="45" y2="50" stroke="#808080" stroke-width="2"/>
+    <line x1="55" y1="40" x2="65" y2="50" stroke="#808080" stroke-width="2"/>
+    <circle cx="50" cy="50" r="5" fill="#808080"/>
+</svg>

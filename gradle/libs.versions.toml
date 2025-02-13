@@ -24,6 +24,7 @@ activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+androidsvg = { group = "com.caverock", name = "androidsvg", version = "1.4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

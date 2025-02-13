@@ -8,6 +8,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.final_proyect.juego1.MainActivity;
+import com.example.final_proyect.juego2.MainActivity2;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -30,7 +31,8 @@ public class MenuActivity extends AppCompatActivity {
         buttonJuego2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Aquí puedes agregar la lógica para el segundo juego
+                Intent intent = new Intent(MenuActivity.this, MainActivity2.class);
+                startActivity(intent);
             }
         });
     }

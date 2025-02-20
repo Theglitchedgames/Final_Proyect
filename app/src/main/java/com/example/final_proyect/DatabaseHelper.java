@@ -14,6 +14,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_USERNAME = "username";
     private static final String COLUMN_PASSWORD = "password";
+    private static final String COLUMN_MAX_SCORE = "max_score";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -21,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)";
+        String createTable = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, max_score INTEGER DEFAULT 0)";
         db.execSQL(createTable);
     }
 
@@ -53,5 +54,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return count > 0;
+    }
+
+    public void updateMaxScore(String username, int newScore) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String query = "SELECT max_score FROM users WHERE username = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor.moveToFirst()) {
+            int currentMax = cursor.getInt(0);
+            if (newScore > currentMax) {
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_MAX_SCORE, newScore);
+                db.update(TABLE_USERS, values, COLUMN_USERNAME + "=?", new String[]{username});
+            }
+        }
+        cursor.close();
+        db.close();
+    }
+
+    public int getMaxScore(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT max_score FROM users WHERE USERNAME = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        int maxScore = 0;
+        if (cursor.moveToFirst()) {
+            maxScore = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return maxScore;
     }
 }

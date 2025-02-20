@@ -13,6 +13,7 @@ public class Player {
     private float x, y;
     private Picture playerPicture;
     private int size = 100; // Tamaño igual a un círculo con radio 50 (diámetro 100)
+    private static final float SENSITIVITY = 5.0f;
 
     public Player(Context context) {
         x = 500;
@@ -31,7 +32,7 @@ public class Player {
     }
 
     public void update(float sensorX) {
-        x -= sensorX * 10;
+        x -= sensorX * SENSITIVITY;
         if (x < 0) x = 0;
         if (x > 1000) x = 1000;
     }

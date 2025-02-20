@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -34,6 +35,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
     private Paint buttonPaint;
     private Paint buttonTextPaint;
     private SpaceBackground spaceBackground;
+    private static final int DIFICULTY_INCREASE_INTERVAL = 15;
+    private static final float SPEED_INCREASE_FACTOR = 1.2f;
+    private int maxFallingObjects = 5;
+    private float currentSpeedMultiplier = 1.0f;
+    private int lastDifficultyIncrease = 0;
+    private boolean isStartScreen = true;
+    private Paint titlePaint;
+    private Paint descriptionPaint;
+    private RectF startButton;
+    private String gameDescription = "Your game description here";
+    private int maxScore;
 
     public GameView(Context context) {
         super(context);
@@ -75,6 +87,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
         buttonTextPaint.setColor(Color.WHITE);
         buttonTextPaint.setTextSize(60);
         buttonTextPaint.setTextAlign(Paint.Align.CENTER);
+
+        titlePaint = new Paint();
+        titlePaint.setColor(Color.WHITE);
+        titlePaint.setTextSize(140);
+        titlePaint.setTextAlign(Paint.Align.CENTER);
+        titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+
+        descriptionPaint = new Paint();
+        descriptionPaint.setColor(Color.WHITE);
+        descriptionPaint.setTextSize(40);
+        descriptionPaint.setTextAlign(Paint.Align.CENTER);
     }
 
     @Override
@@ -114,6 +137,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
                 width / 2 + 200,
                 height / 2 + 200
         );
+        startButton = new RectF(
+                width / 2 -200,
+                height / 2 +150,
+                width / 2 + 200,
+                height / 2 + 250
+        );
         spaceBackground = new SpaceBackground(getContext(), width, height);
     }
 
@@ -124,21 +153,23 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
             // Dibujar el fondo espacial
             spaceBackground.draw(canvas);
 
-            // Resto del código de dibujo existente
-            player.draw(canvas);
-            for (FallingObject obj : fallingObjects) {
-                obj.draw(canvas);
-            }
+            if (isStartScreen) {
+                canvas.drawRect(0, 0, getWidth(), getHeight(), overlayPaint);
 
-            // Dibujar score y vidas
-            Paint paint = new Paint();
-            paint.setColor(Color.WHITE);
-            paint.setTextSize(50);
-            canvas.drawText("Score: " + score, getWidth() - 300, 100, paint);
-            canvas.drawText("Lives: " + lives, getWidth() - 300, 160, paint);
+                canvas.drawText("GALACTA", getWidth() / 2, getHeight() / 2 - 300, titlePaint);
 
-            // Si es game over, dibujar la overlay y los elementos de game over
-            if (isGameOver) {
+                String[] lines = gameDescription.split("\n");
+                float y = getHeight() / 2 - 100;
+                for (String line : lines) {
+                    canvas.drawText(line, getWidth() / 2, y, descriptionPaint);
+                    y += 50;
+                }
+
+                canvas.drawText("Max Score: " + maxScore, getWidth() / 2, y + 50, descriptionPaint);
+
+                canvas.drawRoundRect(startButton, 20, 20, buttonPaint);
+                canvas.drawText("START GAME", startButton.centerX(), startButton.centerY() + 20, buttonTextPaint);
+            } else if (isGameOver) {
                 // Dibujar overlay semi-transparente
                 canvas.drawRect(0, 0, getWidth(), getHeight(), overlayPaint);
 
@@ -149,6 +180,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
                 // Dibujar botón de retry
                 canvas.drawRoundRect(retryButton, 20, 20, buttonPaint);
                 canvas.drawText("RETRY", retryButton.centerX(), retryButton.centerY() + 20, buttonTextPaint);
+            } else {
+                // Resto del código de dibujo existente
+                player.draw(canvas);
+                for (FallingObject obj : fallingObjects) {
+                    obj.draw(canvas);
+                }
+
+                // Dibujar score y vidas
+                Paint paint = new Paint();
+                paint.setColor(Color.WHITE);
+                paint.setTextSize(50);
+                canvas.drawText("Score: " + score, getWidth() - 300, 100, paint);
+                canvas.drawText("Lives: " + lives, getWidth() - 300, 160, paint);
             }
         }
     }
@@ -157,9 +201,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
         if (!isGameOver) {
             spaceBackground.update();
             player.update(sensorX);
-            if (fallingObjects.size() < 5) {
-                fallingObjects.add(new FallingObject(getContext(), getWidth(), getHeight()));
+
+            if (score > 0 && score % DIFICULTY_INCREASE_INTERVAL == 0 && score != lastDifficultyIncrease) {
+                increaseDifficulty();
+                lastDifficultyIncrease = score;
             }
+
+            if (fallingObjects.size() < maxFallingObjects) {
+                fallingObjects.add(new FallingObject(getContext(), getWidth(), getHeight(), currentSpeedMultiplier));
+            }
+
             List<FallingObject> toRemove = new ArrayList<>();
             for (FallingObject obj : fallingObjects) {
                 obj.update();
@@ -179,13 +230,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
         }
     }
 
+    private void increaseDifficulty() {
+        maxFallingObjects += 2;
+        currentSpeedMultiplier *= SPEED_INCREASE_FACTOR;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (isGameOver && event.getAction() == MotionEvent.ACTION_DOWN) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             float x = event.getX();
             float y = event.getY();
 
-            if (retryButton.contains(x, y)) {
+            if (isStartScreen && startButton.contains(x, y)) {
+                isStartScreen = false;
+                scoreHandler.post(scoreRunnable);
+                return true;
+            } else if (isGameOver && retryButton.contains(x, y)) {
                 resetGame();
                 return true;
             }
@@ -197,9 +257,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
         score = 0;
         lives = 3;
         isGameOver = false;
+        isStartScreen = false;
         fallingObjects.clear();
         player = new Player(getContext());
-        scoreHandler.post(scoreRunnable);
+        maxFallingObjects = 5;
+        currentSpeedMultiplier = 1.0f;
+        lastDifficultyIncrease = 0;
     }
 
     @Override
@@ -211,4 +274,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    public void setMaxScore(int score) {
+        this.maxScore = score;
+    }
 }

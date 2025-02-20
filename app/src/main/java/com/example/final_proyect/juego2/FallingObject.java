@@ -16,6 +16,8 @@ public class FallingObject {
     private Picture objectPicture;
     private int speed;
     private static final int SIZE = 100; // Tamaño ajustado para coincidir con el jugador
+    private float speedMultiplier;
+
     private static final int[] DRAWABLE_RESOURCES = {
             R.raw.asteroid,
             R.raw.satellite,
@@ -23,11 +25,13 @@ public class FallingObject {
             R.raw.space_debris
     };
 
-    public FallingObject(Context context, int screenWidth, int screenHeight) {
+    public FallingObject(Context context, int screenWidth, int screenHeight, float speedMultiplier) {
         Random random = new Random();
         x = random.nextInt(screenWidth);
         y = 0;
-        speed = random.nextInt(10) + 5;
+        this.speedMultiplier = speedMultiplier;
+        speed = (random.nextInt(10) + 5) * (int) speedMultiplier;
+
 
         try {
             // Seleccionar un recurso SVG aleatorio

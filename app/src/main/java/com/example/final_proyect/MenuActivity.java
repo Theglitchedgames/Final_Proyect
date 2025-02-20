@@ -12,28 +12,36 @@ import com.example.final_proyect.juego2.MainActivity2;
 
 public class MenuActivity extends AppCompatActivity {
 
+    private Button button2048;
+    private Button buttonGalacta;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        Button button2048 = findViewById(R.id.button_2048);
-        Button buttonJuego2 = findViewById(R.id.button_juego2);
+        button2048 = findViewById(R.id.button_2048);
+        buttonGalacta = findViewById(R.id.button_juego2);
 
         button2048.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
 
-        buttonJuego2.setOnClickListener(new View.OnClickListener() {
+        buttonGalacta.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, MainActivity2.class);
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
     }
 }

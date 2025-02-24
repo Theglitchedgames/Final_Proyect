@@ -7,14 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-
     private static final String DATABASE_NAME = "users.db";
     private static final int DATABASE_VERSION = 1;
     private static final String TABLE_USERS = "users";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_USERNAME = "username";
     private static final String COLUMN_PASSWORD = "password";
-    private static final String COLUMN_MAX_SCORE = "max_score";
+    private static final String COLUMN_MAX_SCORE_GAME1 = "max_score_game1";
+    private static final String COLUMN_MAX_SCORE_GAME2 = "max_score_game2";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, max_score INTEGER DEFAULT 0)";
+        String createTable = "CREATE TABLE " + TABLE_USERS + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " + COLUMN_MAX_SCORE_GAME1 + " INTEGER DEFAULT 0, " + COLUMN_MAX_SCORE_GAME2 + " INTEGER DEFAULT 0)";
         db.execSQL(createTable);
     }
 
@@ -56,17 +56,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count > 0;
     }
 
-    public void updateMaxScore(String username, int newScore) {
+    /**
+     * Actualiza la puntuación máxima del juego 1 (2048) para un usuario específico.
+     * Solo actualiza si la nueva puntuación es mayor que la existente.
+     *
+     * @param username Nombre de usuario
+     * @param newScore Nueva puntuación
+     */
+    public void updateMaxScoreGame1(String username, long newScore) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        String query = "SELECT max_score FROM users WHERE username = ?";
+        String query = "SELECT " + COLUMN_MAX_SCORE_GAME1 + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " =?";
         Cursor cursor = db.rawQuery(query, new String[]{username});
 
         if (cursor.moveToFirst()) {
-            int currentMax = cursor.getInt(0);
+            long currentMax = cursor.getLong(0);
             if (newScore > currentMax) {
                 ContentValues values = new ContentValues();
-                values.put(COLUMN_MAX_SCORE, newScore);
+                values.put(COLUMN_MAX_SCORE_GAME1, newScore);
                 db.update(TABLE_USERS, values, COLUMN_USERNAME + "=?", new String[]{username});
             }
         }
@@ -74,9 +81,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int getMaxScore(String username) {
+    /**
+     * Actualiza la puntuación máxima del juego 2 (Galacta) para un usuario específico.
+     * Solo actualiza si la nueva puntuación es mayor que la existente.
+     *
+     * @param username Nombre de usuario
+     * @param newScore Nueva puntuación
+     */
+    public void updateMaxScoreGame2(String username, int newScore) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String query = "SELECT " + COLUMN_MAX_SCORE_GAME2 + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor.moveToFirst()) {
+            int currentMax = cursor.getInt(0);
+            if (newScore > currentMax) {
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_MAX_SCORE_GAME2, newScore);
+                db.update(TABLE_USERS, values, COLUMN_USERNAME + "=?", new String[]{username});
+            }
+        }
+        cursor.close();
+        db.close();
+    }
+
+    /**
+     * Obtiene la puntuación máxima del juego 1 (2048) para un usuario específico.
+     *
+     * @param username Nombre de usuario
+     * @return Puntuación máxima del juego 1
+     */
+    public long getMaxScoreGame1(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT max_score FROM users WHERE USERNAME = ?";
+        String query = "SELECT " + COLUMN_MAX_SCORE_GAME1 + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        long maxScore = 0;
+        if (cursor.moveToFirst()) {
+            maxScore = cursor.getLong(0);
+        }
+        cursor.close();
+        db.close();
+        return maxScore;
+    }
+
+    /**
+     * Obtiene la puntuación máxima del juego 2 (Galacta) para un usuario específico.
+     *
+     * @param username Nombre de usuario
+     * @return Puntuación máxima del juego 2
+     */
+    public int getMaxScoreGame2(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + COLUMN_MAX_SCORE_GAME2 + " FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{username});
 
         int maxScore = 0;
@@ -86,5 +144,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return maxScore;
+    }
+
+    /**
+     * Método de compatibilidad con el código anterior.
+     * Actualiza la puntuación del juego 2 (Galacta).
+     */
+    public void updateMaxScore(String username, int newScore) {
+        updateMaxScoreGame2(username, newScore);
+    }
+
+    /**
+     * Método de compatibilidad con el código anterior.
+     * Obtiene la puntuación del juego 2 (Galacta).
+     */
+    public int getMaxScore(String username) {
+        return getMaxScoreGame2(username);
     }
 }

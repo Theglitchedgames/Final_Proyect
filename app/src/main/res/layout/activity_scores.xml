@@ -1,16 +1,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bb"
-    tools:context=".MenuActivity">
+    android:background="@drawable/bb">
 
     <TextView
-        android:id="@+id/logo"
+        android:id="@+id/title_scores"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Game Menu"
+        android:text="Your Scores"
         android:textColor="@color/colorWhite"
         android:textSize="36sp"
         android:textStyle="bold"
@@ -20,42 +18,36 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.13" />
 
-    <Button
-        android:id="@+id/button_2048"
+    <TextView
+        android:id="@+id/score_2048"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="64dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/btn_bg"
-        android:text="2048 Game"
-        android:textAllCaps="false"
+        android:padding="16dp"
+        android:text="2048 High Score: 0"
+        android:textAlignment="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo" />
+        app:layout_constraintTop_toBottomOf="@+id/title_scores" />
 
-    <Button
-        android:id="@+id/button_juego2"
+    <TextView
+        android:id="@+id/score_galacta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:background="@drawable/btn_bg"
-        android:text="Galacta"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="@+id/button_2048"
-        app:layout_constraintStart_toStartOf="@+id/button_2048"
-        app:layout_constraintTop_toBottomOf="@+id/button_2048" />
-
-    <Button
-        android:id="@+id/button_scores"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/btn_bg"
-        android:text="View Scores"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="@+id/button_juego2"
-        app:layout_constraintStart_toStartOf="@+id/button_juego2"
-        app:layout_constraintTop_toBottomOf="@+id/button_juego2" />
+        android:padding="16dp"
+        android:text="Galacta High Score: 0"
+        android:textAlignment="center"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="@+id/score_2048"
+        app:layout_constraintStart_toStartOf="@+id/score_2048"
+        app:layout_constraintTop_toBottomOf="@+id/score_2048" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

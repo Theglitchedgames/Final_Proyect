@@ -38,6 +38,15 @@ public class MenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Button buttonScores = findViewById(R.id.button_scores);
+        buttonScores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, ScoresActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

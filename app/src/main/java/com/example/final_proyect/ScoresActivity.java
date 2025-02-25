@@ -93,11 +93,6 @@ public class ScoresActivity extends AppCompatActivity {
     }
 
     private String formatScore(long score) {
-        if (score >= 1000000) {
-            return String.format("%.1fM", score / 1000000.0);
-        } else if (score >= 1000) {
-            return String.format("%.1fK", score / 1000.0);
-        }
         return String.valueOf(score);
     }
 

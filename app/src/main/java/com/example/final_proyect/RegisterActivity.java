@@ -29,8 +29,6 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         databaseHelper = new DatabaseHelper(this);
 
-        databaseHelper.addUser("admin", "1234");
-
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

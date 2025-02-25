@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -49,11 +50,21 @@ public class MainActivity extends AppCompatActivity {
         String password = inputPassword.getText().toString();
 
         if (databaseHelper.checkUser(email, password)) {
-            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MenuActivity.class);
-            startActivity(intent);
+            loginSuccessful(email);
         } else {
             Toast.makeText(this, "Invalid Email or Password", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void loginSuccessful(String email) {
+        SharedPreferences preferences = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("current_username", email);
+        editor.apply();
+
+        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.example.final_proyect.DatabaseHelper;
 import com.example.final_proyect.R;
 
 import java.util.ArrayList;
@@ -106,20 +107,42 @@ public class MainGame
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
     }
 
-    private void recordHighScore()
-    {
+    private void recordHighScore() {
         final int rows = MainMenuActivity.getRows();
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(HIGH_SCORE + rows, highScore);
         editor.apply();
+
+        // Guardar también en la base de datos
+        SharedPreferences userPrefs = mContext.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String username = userPrefs.getString("current_username", "");
+
+        if (!username.isEmpty()) {
+            DatabaseHelper dbHelper = new DatabaseHelper(mContext);
+            dbHelper.updateMaxScoreGame1(username, highScore);
+        }
     }
 
     private long getHighScore()
     {
         final int rows = MainMenuActivity.getRows();
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return settings.getLong(HIGH_SCORE + rows, -1);
+        long sharedPrefsHighScore = settings.getLong(HIGH_SCORE + rows, -1);
+
+        // Obtener puntuación desde la base de datos
+        SharedPreferences userPrefs = mContext.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String username = userPrefs.getString("current_username", "");
+
+        if (!username.isEmpty()) {
+            DatabaseHelper dbHelper = new DatabaseHelper(mContext);
+            long dbHighScore = dbHelper.getMaxScoreGame1(username);
+
+            // Devolver la mayor de las dos puntuaciones
+            return Math.max(sharedPrefsHighScore, dbHighScore);
+        }
+
+        return sharedPrefsHighScore;
     }
 
     private void prepareTiles()

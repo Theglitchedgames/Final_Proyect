@@ -27,6 +27,7 @@
         <activity android:name=".MenuActivity"/>
         <activity android:name=".juego1.MainActivity" />
         <activity android:name=".juego2.MainActivity2" />
+        <activity android:name=".ScoresActivity" />
     </application>
 
 </manifest>

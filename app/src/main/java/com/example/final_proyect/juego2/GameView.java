@@ -1,6 +1,7 @@
 package com.example.final_proyect.juego2;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +15,8 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.example.final_proyect.DatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +71,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
             }
         };
         scoreHandler.post(scoreRunnable);
+        SharedPreferences preferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String username = preferences.getString("current_username", "");
+        if (!username.isEmpty()) {
+            DatabaseHelper dbHelper = new DatabaseHelper(context);
+            maxScore = dbHelper.getMaxScoreGame2(username);
+        }
     }
 
     private void setupPaints() {
@@ -227,6 +236,27 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Sen
                 isGameOver = true;
                 scoreHandler.removeCallbacks(scoreRunnable);
             }
+        }
+
+        // En el método update() de GameView.java
+        if (lives <= 0) {
+            isGameOver = true;
+            scoreHandler.removeCallbacks(scoreRunnable);
+
+            // Guardar puntuación en la base de datos
+            saveScoreToDatabase(score);
+        }
+    }
+
+    // Añadir este nuevo método en la clase GameView
+    private void saveScoreToDatabase(int score) {
+        // Obtener el nombre de usuario de las preferencias o de donde lo tengas guardado
+        SharedPreferences preferences = getContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String username = preferences.getString("current_username", "");
+
+        if (!username.isEmpty()) {
+            DatabaseHelper dbHelper = new DatabaseHelper(getContext());
+            dbHelper.updateMaxScoreGame2(username, score);
         }
     }
 
